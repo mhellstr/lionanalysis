@@ -1,0 +1,154 @@
+#ifndef ACTION_H
+#define ACTION_H
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
+#include <vector>
+#include "group.h"
+#include "timestep.h"
+#include "atom.h"
+#include "rdf.h"
+#include "anglerdf.h"
+#include "dihedralrdf.h"
+#include "msd.h"
+#include "mbd.h"
+#include "vac.h"
+#include "tcf.h"
+
+#define ACTION_TYPE_PRINTGROUP 1
+#define ACTION_TYPE_RDF 2
+#define ACTION_TYPE_DEFINEGROUP 3
+#define ACTION_TYPE_ANGLERDF 4
+#define ACTION_TYPE_DIHEDRALRDF 5
+#define ACTION_TYPE_FINALSHELL 6
+#define ACTION_TYPE_MSD 7
+#define ACTION_TYPE_MODIFYBONDDISTRIBUTION 8
+#define ACTION_TYPE_BONDDISTRIBUTION 9
+#define ACTION_TYPE_FINDVACUUM 10
+#define ACTION_TYPE_VAC 11
+#define ACTION_TYPE_ISMEMBER 12
+#define ACTION_TYPE_PRINTPROPERTIES 13
+#define ACTION_TYPE_TIMECORRELATIONFUNCTION 14
+
+#define ACTION_PRINTTYPE_XYZ 1
+#define ACTION_PRINTTYPE_IDS 2
+#define ACTION_PRINTTYPE_PROPERTIES 3
+#define ACTION_PRINTTYPE_YMOL 4
+#define ACTION_PRINTTYPE_XMOLOUT 5
+
+
+enum class ACTION_PRINTFORMAT { SINGLELINES, MULTIPLELINES, SINGLECOLUMNPERGROUP };
+enum class ACTION_PRINTTYPE { XYZ, IDS, PROPERTIES, YMOL, XMOLOUT };
+enum class ACTION_TYPE { 
+    PRINTGROUP, //print members of group with one of ACTION_PRINTTYPES (should normally be xyz/ymol/xmolout; ids/properties are outdated, use PRINTPROPERTIES in that case instead
+    RDF,
+    DEFINEGROUP, 
+    ANGLERDF,
+    DIHEDRALRDF,
+    FINALSHELL,
+    MSD,
+    MODIFYBONDDISTRIBUTION, //not implemented properly
+    BONDDISTRIBUTION, //not implemented properly
+    FINDVACUUM,
+    VAC,
+    ISMEMBER, //Outdated? use PRINTPROPERTIES
+    PRINTPROPERTIES,
+    TIMECORRELATIONFUNCTION
+};
+// #define ACTION_PRINTFORMAT_SINGLELINES 1
+// #define ACTION_PRINTFORMAT_MULTIPLELINES 2
+
+using namespace std;
+
+class Action {
+public:
+  Action(); //nothing happens here
+  //Action(int, int, string, string); //printgroup
+  //Action(int, int); //definegroup
+  Action(int, int, Group*, ofstream*, string, string, int centeron, vector<GroupAndString>, vector<GROUP_PROPERTY>); //printgroup
+  Action(int, Group*); //definegroup
+  Action(int, int, RDF*, ofstream*, string); //rdf
+  Action(int, int, AngleRDF*, ofstream*, ofstream*, ofstream*, ofstream*, ofstream*, ofstream*, ofstream*, ofstream*); //anglerdf
+  Action(int, int, DihedralRDF*, ofstream* ); //dihedralrdf
+  Action(int, int, MSD*, ofstream*); //msd
+  Action(int, int, AdvancedTimeCorrelationFunction*, ofstream*); //msd
+  Action(int, int, VAC*, ofstream*, ofstream *out2=nullptr); //vac
+  Action(int, int, Group*, float, ofstream*); //findvacuum
+  Action(int, int, Group*, ofstream*); //ismember
+  //Action(int, int, MBD*, ofstream*); //modify bond distribution
+  Action(int, int, BondDistribution*, ofstream*, string, bool, bool, bool); //modify bond distribution
+  Action(int, string); //finalshell
+  Action(int, int, const vector<Group*> &, const vector<GROUP_PROPERTY> &, ofstream*); //printproperties
+  ~Action();
+  //void updateGroupPointers(vector<Group> &);
+  void action(vector<Atom> *atoms=nullptr, Timestep *timestep=nullptr); //called at each timestep from main loop
+  void finalaction(vector<Atom> *atoms=nullptr, Timestep *timestep=nullptr); //called when all timesteps have been read
+  void setDistDiffGroup(bool a=true) { mDistDiffGroup = a; }
+  void setCenterOnId(bool a=true) { mCenterOnId = a; }
+  void findVacuum(vector<Atom> *, Timestep *); //ACTION_TYPE_FINDVACUUM
+  void help_findVacuum(vector<Atom> *, Timestep *, float, float, float, float, float, float ,float, float&, float&, float&, float&); //ACTION_TYPE_FINDVACUUM
+  //void actionIsMember(vector<Atom> *, Timestep *);
+  void actionPrintProperties(vector<Atom> *, Timestep *); //ACTION_TYPE_PRINTPROPERTIES
+  void setPrintPropertiesTimestepIteration(bool a=true) {mPrintPropertiesTimestepIteration = a; }
+  void setPrintPropertiesTimestepNumber(bool a=true) {mPrintPropertiesTimestepNumber = a; }
+  void setPrintNumEntriesPerGroup(bool a=true) {mPrintNumEntriesPerGroup = a; }
+  void setPrintEmptyFrames(bool a=true) {mPrintEmptyFrames = a; }
+  void setPrintFormat(ACTION_PRINTFORMAT a) {mPrintFormat = a; }
+  void setPrintSeparator(string s) {mPrintSeparator=s;}
+  string getDescription() const { return mDescription; }
+  int getType() const { return mType; }
+  void addGroup(Group *g) { mvGroups.push_back(g); }
+protected:
+  virtual void internal_action(const vector<Atom> *atoms, const Timestep *timestep) { };
+  ofstream *mOut;
+  ofstream *mOut2;
+  ofstream *mOut3;
+  ofstream *mOut4;
+  ofstream *mOut5;
+  ofstream *mOut6;
+  ofstream *mOut7;
+  ofstream *mOut8;
+  Group *mGroup1;
+  Group *mGroup2;
+  Group *mGroup3;
+private:
+  int mCenterOn; //printgroup type xyz, center around a certain atom
+  int mCount; //increase every time action is performed (count how many times action has been performed)
+  int mEvery; //perform action every so many frames....
+  int mPrintType; //ACTION_PRINTTYPE, used for ACTION_TYPE_PRINTGROUP
+  int mType; //what kind of ACTION_TYPE ?
+  bool mInitialized; //all constructors set this to false. action() sets it to true
+  bool mDistDiffGroup; //only relevant for printing of sumgroups. if true, only print distances (in the printproperties function) between atoms from different constituent groups.
+  bool mCenterOnId; //if true, the mCenterOn variable will refer to the OUTSIDE atom id; otherwise, mCenterOn refers to the INSIDE (internal group) atom id (i.e. position in mAtoms vector)
+  bool mPrintEmptyFrames; //printgroup
+  bool mPrintPropertiesTimestepIteration; //printproperties
+  bool mPrintPropertiesTimestepNumber; //printproperties
+  bool mPrintNumEntriesPerGroup; //printproperties
+  bool mAverage; //for action = bonddistribution
+  bool mNormalize; //for action = bonddistribution
+  bool mPrintDistribution; //for action = bonddistribution (true: print distribution function, false: print histogram)
+  float mResolution; //for ACTION_TYPE_FINDVACUUM
+  string mCommand; //for ACTION_TYPE_FINALLSHELL
+  string mDescription; //human-friendly description of the action. set by the constructor. accessed by getDescription()
+  string mFilename; //set by some constructors but never really used
+  string mPrintSeparator; //printproperties, separator between properties for each timestep. defaults to " "
+  std::vector<Group*> mGroups; //printproperties, which groups to print
+  std::vector<GROUP_PROPERTY> mProperties; //printproperties, which properties to print
+  //vector<GROUP_PROPERTY> mPrintProperties; //same thing?!
+  RDF *mRdf1;
+  AngleRDF *mAngleRDF;
+  DihedralRDF *mDihedralRDF;
+  MSD *mMSD;
+  VAC *mVAC;
+  AdvancedTimeCorrelationFunction *mATCF;
+  //MBD *mMBD;
+  BondDistribution *mBondDistribution;
+  vector<GroupAndString> mGAS;
+  ACTION_PRINTFORMAT mPrintFormat;
+  std::vector<Group*> mvGroups;
+};
+
+
+#endif
