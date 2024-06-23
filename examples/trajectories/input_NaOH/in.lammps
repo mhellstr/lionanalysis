@@ -1,0 +1,65 @@
+units		metal
+variable runnerDir string "/home/hellstrom/NN-POTENTIALS/namega9-32-8/"
+variable runnerCutoff equal 6.350
+### TIMESTEP AND TEMPERATURE AND PRESSURE SETTINGS
+variable   mytimestep            equal   0.5/1000                 #  fs. 2 timesteps = 1 fs, 2000 timesteps = 1 ps.
+variable   mytemperature         equal   300                 #  K
+variable   mytemperaturedamping  equal   ${mytimestep}*100   # should work for most systems
+variable   mypressure            equal   1.0                   #  atm
+variable   mypressuretype        string  "iso"               # iso, x, y, z...
+variable   mypressuredamping     equal   ${mytimestep}*1000  # should work for most systems
+### RUN SETTINGS
+variable  num_equilibration_steps     equal  50000
+variable  num_production_steps        equal  50000
+variable  restartfrequency            equal  20000
+variable production_dumpfile_format         string "id type x y z"
+variable production_dumpfile_format_format  string "'%d %d %.4f %.4f %.4f'"
+variable other_dumpfile_format string "id type x y z"
+variable other_dumpfile_format_format string "${production_dumpfile_format_format}"
+### OTHER SETTINGS
+variable  thermofrequency                   equal   1.0e2
+variable  thermostyle_format                string  "step  pe  ke  etotal  temp  press  lx ly lz"
+variable atom_style string "atomic" #runner
+
+processors * * *
+
+atom_style	${atom_style} # necessary for reaxff
+read_data   struct.geo
+#read_restart restart.*
+
+pair_style runner dir ${runnerDir} showew yes resetew no maxew 10000   # set up pair style runner
+pair_coeff * * ${runnerCutoff}                                     # set up pair style coefficients
+
+neighbor	2.0 bin # neighbor list includes all atoms a distance (force_cutoff+2.5) from each other. what is force_cutoff?
+neigh_modify	every 1 delay 0 check no # build neighbor lists every 10 steps. check no=always build when "every" is satisfied
+
+thermo_style    custom ${thermostyle_format}
+timestep ${mytimestep}
+thermo 10
+
+### NVT/NPT equilibration ####
+print 'Running NVT equilibration'
+fix 1 all nvt temp ${mytemperature} ${mytemperature} ${mytemperaturedamping}
+#fix 1 all npt temp ${mytemperature} ${mytemperature} ${mytemperaturedamping} ${mypressuretype} ${mypressure} ${mypressure} ${mypressuredamping}
+dump 1 all custom 100 equilibration.cfg ${other_dumpfile_format}
+dump_modify 1 sort id
+run ${num_equilibration_steps}
+undump 1
+unfix 1
+shell lrdx2xyz.sh equilibration.cfg >equilibration.xyz
+shell extractlastframe.sh equilibration.xyz > lastframe.xyz
+
+
+#### NVT/NPT PRODUCTION ####
+print 'Running NVT production'
+fix 1 all nvt temp ${mytemperature} ${mytemperature} ${mytemperaturedamping}
+#fix 1 all npt temp ${mytemperature} ${mytemperature} ${mytemperaturedamping} ${mypressuretype} ${mypressure} ${mypressure} ${mypressuredamping}
+dump 1 all custom 10 production.cfg ${other_dumpfile_format}
+dump_modify 1 sort id
+restart ${restartfrequency} restart
+run ${num_production_steps}
+undump 1
+unfix 1
+shell lrdx2xyz.sh production.cfg >production.xyz
+
+shell 'date'

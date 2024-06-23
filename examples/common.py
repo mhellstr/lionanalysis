@@ -34,6 +34,26 @@ def averagesize2df(filename: os.PathLike, include_xxxx: bool = False) -> pd.Data
     return df.drop(df[df["Group"].str.contains("xxxx")].index)
 
 
+def singlegroupproperty2df(filename: Union[os.PathLike, str], prefix: str = "col") -> pd.DataFrame:
+    """Convert PrintProperties output for a single group with timestepiteration and per-atom properties to a pandas DataFrame.
+
+    PrintProperties filename.txt GROUPS OneGroup PROPERTIES timestepiteration [id|coordinationnumber|...]
+
+    :param filename: _description_
+    :type filename: Union[os.PathLike, str]
+    :param prefix: _description_, defaults to "col"
+    :type prefix: str, optional
+    """
+    df = pd.read_csv(filename, sep="\s+", header=None, skiprows=1)
+    df.columns = ["#iter"] + [f"{prefix}{i+1}" for i in range(df.shape[1] - 1)]
+    return df
+
+
+def msd2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
+    df = pd.read_csv(filename, sep="\s+", skiprows=2)
+    return df
+
+
 def wip_seaborn_rdf_multiplot(rdf_files: Sequence[os.PathLike]):
     df = pd.concat(rdf2df(filename).assign(source=filename) for filename in rdf_files)
     sns.relplot(df, x="#r", y="RDF", hue="source", kind="line", height=3)
