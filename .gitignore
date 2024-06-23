@@ -33,3 +33,7 @@
 
 .vscode
 __pycache__
+
+
+*.dat
+*.txt

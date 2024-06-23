@@ -1,5 +1,9 @@
 # lionanalysis
-Reactive molecular dynamics trajectory analysis
+Reactive molecular dynamics trajectory analysis.
+
+*lionanalysis* is short for *LAMMPS ion analysis*, but it can also be used to analyze trajectories from other programs and be applied to a variety of structures (not just ions).
+
+![logo](logo.jpg)
 
 ## Installation
 
@@ -42,6 +46,5 @@ The packages
 - [dlib](http://dlib.net) (Boost License) 
 
 are included with `lionanlysis` in the `src/include` directory.
-
 
 
