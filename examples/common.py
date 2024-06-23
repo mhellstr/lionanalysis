@@ -9,18 +9,15 @@ from typing import Sequence, Union
 from pathlib import Path
 
 
-def hist2df(filename: str) -> pd.DataFrame:
-    return pd.read_csv(filename, sep='\s+').iloc[:, :4]
+def hist2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
+    return pd.read_csv(filename, sep="\s+").iloc[:, :3]
 
 
-def rdf2df(filename: str) -> pd.DataFrame:
-    return pd.read_csv(filename, sep='\s+').iloc[:, :6]
+def rdf2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
+    return pd.read_csv(filename, sep="\s+").iloc[:, :6]
 
 
-def averagesize2df(
-        filename: os.PathLike,
-        include_xxxx: bool = False
-) -> pd.DataFrame:
+def averagesize2df(filename: os.PathLike, include_xxxx: bool = False) -> pd.DataFrame:
     """Converts averagesize.dat into a dataframe.
 
     Args:
@@ -30,24 +27,25 @@ def averagesize2df(
     Returns:
         pd.DataFrame: _description_
     """
-    df = pd.read_csv(
-        filename,
-        sep="\s+",
-        comment="#",
-        names=("Group", "AverageSize")
-    )
+    df = pd.read_csv(filename, sep="\s+", comment="#", names=("Group", "AverageSize"))
     if include_xxxx:
         return df
 
     return df.drop(df[df["Group"].str.contains("xxxx")].index)
 
 
-def wip_seaborn_rdf_multiplot(rdf_files: Sequence[Union[Path, str]]):
+def wip_seaborn_rdf_multiplot(rdf_files: Sequence[os.PathLike]):
     df = pd.concat(rdf2df(filename).assign(source=filename) for filename in rdf_files)
     sns.relplot(df, x="#r", y="RDF", hue="source", kind="line", height=3)
 
 
-def plot_trajectory(filename: str, n_images: int = 3) -> plt.Axes:
+def plot_trajectory(
+    filename: Union[os.PathLike[str], str],
+    n_images: int = 3,
+    plot_cell: bool = True,
+    rotation: str = "-85x,-5y,0z",
+    radii: float = 0.6,
+) -> plt.Axes:
     """Plot a .xyz file.
 
     Args:
@@ -57,27 +55,29 @@ def plot_trajectory(filename: str, n_images: int = 3) -> plt.Axes:
     Returns:
         _type_: plt.Axes
     """
-    trajectory = ase.io.read(filename, ":")
+    trajectory = ase.io.read(str(filename), ":")
     n_images = min(n_images, len(trajectory))
     # read in the lattice parameters from the mattixyz format
     lattice_line_counter = -1
-    with open(filename, "r") as f:
-        for line in f:
-            if line.startswith("XYZ "):
-                lattice_line_counter += 1
-                splitline = line.split()
-                trajectory[lattice_line_counter].cell = np.array([
-                    float(splitline[1]),
-                    float(splitline[2]),
-                    float(splitline[3])
-                ])
-    frames = np.linspace(0, len(trajectory)-1, num=n_images, endpoint=True, dtype=np.int64)
+    if plot_cell:
+        with open(filename, "r") as f:
+            for line in f:
+                if line.startswith("XYZ "):
+                    lattice_line_counter += 1
+                    splitline = line.split()
+                    trajectory[lattice_line_counter].cell = np.array(
+                        [float(splitline[1]), float(splitline[2]), float(splitline[3])]
+                    )
+    else:
+        for frame in trajectory:
+            frame.cell = None
+    frames = np.linspace(0, len(trajectory) - 1, num=n_images, endpoint=True, dtype=np.int64)
     fig, ax = plt.subplots(1, len(frames), figsize=(10, 3))
     basename = os.path.basename(filename)
     if n_images == 1:
         ax = [ax]
     for i, frame in enumerate(frames):
-        ase.visualize.plot.plot_atoms(trajectory[frame], ax=ax[i], rotation="-85x,-5y,0z", radii=0.6)
+        ase.visualize.plot.plot_atoms(trajectory[frame], ax=ax[i], rotation=rotation, radii=radii)
         ax[i].set_title(f"{basename} #{frame+1}")
         ax[i].axis("off")
     return ax

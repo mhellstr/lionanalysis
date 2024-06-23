@@ -215,7 +215,9 @@ void ActionPrintStructure::internalAction(const vector<Atom> *allatoms, const Ti
                     g->addAtom(ct->atom(j));
                 }
             }
+            mActualPrints++;
             actualPrint(allatoms, t, g);
+            if (mMaxActualPrints>0 && mActualPrints >= mMaxActualPrints ) break;
         }
         delete g;
     }
