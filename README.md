@@ -20,9 +20,11 @@ Check your installation by running
 lionanalysis.exe --help
 ```
 
-## Usage
+## Usage, examples, documentation
 
 Check the examples/ folder for some self-contained pedagogical examples!
+
+Documentation at [lionanalysis.readthedocs.io](https://lionanalysis.readthedocs.io)
 
 ## Papers using lionanalysis
 
@@ -45,6 +47,6 @@ The packages
 - [TCLAP](https://tclap.sourceforge.net) (MIT License), and
 - [dlib](http://dlib.net) (Boost License) 
 
-are included with `lionanlysis` in the `src/include` directory.
+are included with `lionanalysis` in the `src/include` directory.
 
 
