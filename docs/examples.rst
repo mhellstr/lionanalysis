@@ -5,8 +5,11 @@ Examples
 
 .. important::
 
-    All examples require that the file :download:`common.py
+    **All examples require** that the file :download:`common.py
     <examples/common.py>` be placed in the working directory.
+
+    The original Jupyter notebooks (and common.py) can be found in the
+    ``docs/examples`` directory in the source tree.
 
 .. toctree::
     :maxdepth: 2

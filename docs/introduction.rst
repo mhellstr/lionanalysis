@@ -22,7 +22,7 @@ Quickstart
 
 * `Download the source code <https://github.com/mhellstr/lionanalysis>`__ from GitHub
 * :ref:`Compile the source code <Compilation>`
-* See the :ref:`Examples`.
+* See the :ref:`Examples`. The original Jupyter notebooks (and required ``common.py`` file) can be found in ``docs/examples`` in the source tree.
 
 Features
 ----------
