@@ -22,7 +22,7 @@ lionanalysis.exe --help
 
 ## Usage, examples, documentation
 
-Check the examples/ folder for some self-contained pedagogical examples!
+Check the ``docs/examples/`` folder for some self-contained pedagogical examples!
 
 Documentation at [lionanalysis.readthedocs.io](https://lionanalysis.readthedocs.io)
 

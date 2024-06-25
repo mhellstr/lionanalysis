@@ -10,6 +10,7 @@
    :maxdepth: 3
 
    introduction
+   examples
    input
    faq
    dumpfiles
@@ -17,10 +18,3 @@
    developerdocs
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

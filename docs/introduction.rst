@@ -15,7 +15,7 @@ be calculated.
 Quickstart
 ---------------
 
-See the ``examples/`` folder in the source tree.
+See the :ref:`Examples`.
 
 Features
 ----------
