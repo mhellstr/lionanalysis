@@ -3,6 +3,11 @@
 Examples
 ========================================
 
+.. important::
+
+    All examples require that the file :download:`common.py
+    <examples/common.py>` be placed in the working directory.
+
 .. toctree::
     :maxdepth: 2
 
@@ -11,3 +16,4 @@ Examples
     examples/03a_HydrogenBonds_Radial_Angular_Distribution_Functions
     examples/04a_Lifetime_TimeCorrelationFunction_SSSP_Intermittent
     examples/05a_MSD_ProtonTransferFreeEnergyLandscape
+    examples/06a_Block_Averages

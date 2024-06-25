@@ -1,0 +1,5 @@
+highlight def link basicLanguageKeywords PreProc
+highlight def link keywordOptions Statement
+highlight def link keywordTypes Identifier
+highlight def link groupname Identifier
+
