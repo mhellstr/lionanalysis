@@ -516,6 +516,7 @@ void ReadConfigFile::ProcessSingleLine(const string& origorigs, string configfil
         if (printgroupformatstring == "xyz" || printgroupformatstring == "mattixyz") printgroupformat=StructureFormat::mattixyz;
         else if (printgroupformatstring == "mattixyzdelta") printgroupformat=StructureFormat::mattixyzdelta;
         else if (printgroupformatstring == "xmolout") printgroupformat=StructureFormat::xmolout;
+        else if (printgroupformatstring == "asexyz") printgroupformat=StructureFormat::asexyz;
         else if (printgroupformatstring == "lammpsrdx") printgroupformat=StructureFormat::lammpsrdx;
         else if (printgroupformatstring == "runner") printgroupformat=StructureFormat::runner;
         else if (printgroupformatstring == "runnerwithforceweights") printgroupformat=StructureFormat::runnerwithforceweights;

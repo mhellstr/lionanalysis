@@ -904,7 +904,7 @@ PrintGroup
 
 ::
 
-    PrintGroup groupname XYZ filename [Every X=1] [Unwrapped] 
+    PrintGroup groupname XYZ|ASEXYZ|LAMMPSRDX|RUNNERDATA filename [Every X=1] [Unwrapped] 
     [CenterOn X=-1] [CenterOnId] [CenterAtOrigin]
     [CenterOnXYZ x y z]
     [NoEmptyFrames]
@@ -914,6 +914,8 @@ PrintGroup
     [PrintIndividualCoordinationEnvironments] [PrintPolyhedra] 
     [ScaleBy X=1] [ScaleByMax X=1] [CTScaleBY X=ScaleBy] [CTMinDist X=0] 
     [Special group1 label1 group2 label2 group3 label3 ...]
+
+Output file format XYZ|ASEXYZ|LAMMPSRDX|RUNNERDATA: See :ref:`DumpFileFormats`
 
 If the group is empty, a single Hydrogen atom will be printed (unless
 NoEmptyFrames is given). Gdis is not very happy with empty XYZ files...

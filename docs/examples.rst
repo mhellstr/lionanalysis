@@ -8,8 +8,8 @@ Examples
     **All examples require** that the file :download:`common.py
     <examples/common.py>` be placed in the working directory.
 
-    The original Jupyter notebooks (and common.py) can be found in the
-    ``docs/examples`` directory in the source tree.
+    The original Jupyter notebooks, ``common.py``, and the trajectory files
+    can be found in the ``docs/examples`` directory in the source tree.
 
 .. toctree::
     :maxdepth: 2

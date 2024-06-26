@@ -111,7 +111,7 @@ void ActionPrintStructure::actualPrint(const vector<Atom> *allatoms, const Times
         }
         if (doprint) {
             numatoms++;
-            if (mPrintFormat == StructureFormat::mattixyz || mPrintFormat == StructureFormat::xmolout) {
+            if (mPrintFormat == StructureFormat::mattixyz || mPrintFormat == StructureFormat::xmolout || mPrintFormat == StructureFormat::asexyz) {
                 ss << typestring << " " << px << " " << py << " " << pz << "\n";
             }
             if (mPrintFormat == StructureFormat::mattixyzdelta) {
@@ -125,7 +125,7 @@ void ActionPrintStructure::actualPrint(const vector<Atom> *allatoms, const Times
                 ss << i+1 << " " << typestring << " " << px << " " << py << " " << pz << " " << chargestring << "\n";
 
             }
-            else if (mPrintFormat == StructureFormat::runnerwithforceweights) {
+            else if (mPrintFormat == StructureFormat::runnerwithforceweights || mPrintFormat == StructureFormat::runner) {
                 string weightstring=getSpecial(a, mvSpecial2);
                 ss << "atom " << px*ANGSTROMTOBOHR << " " << py*ANGSTROMTOBOHR << " " << pz*ANGSTROMTOBOHR << " " << typestring << " " << a->q;
                 ss << " 0 " << a->fx*ANGSTROMTOBOHR << " " << a->fy*ANGSTROMTOBOHR << " " << a->fz*ANGSTROMTOBOHR;
@@ -161,7 +161,7 @@ void ActionPrintStructure::actualPrint(const vector<Atom> *allatoms, const Times
         }
     }
     if (mPrintFormat == StructureFormat::lammpsrdx) {
-        (*mpOut) << "ITEM: TIMESTEP" << endl << t->iteration << endl;
+        (*mpOut) << "ITEM: TIMESTEP" << endl << t->number << endl;
         (*mpOut) << "ITEM: NUMBER OF ATOMS" << endl << g->size() << endl;
         (*mpOut) << "ITEM: BOX BOUNDS pp pp pp" << endl;
         (*mpOut) << "0 " << t->cellx << endl;
@@ -176,6 +176,10 @@ void ActionPrintStructure::actualPrint(const vector<Atom> *allatoms, const Times
     else if (mPrintFormat == StructureFormat::xmolout) {
         (*mpOut) << numatoms << endl;
         (*mpOut) << "XYZ " << t->number << " " << t->energy << " " << t->cellx << " " << t->celly << " " << t->cellz << " 90 90 90" << endl;
+    }
+    else if (mPrintFormat == StructureFormat::asexyz) {
+        (*mpOut) << numatoms << endl;
+        (*mpOut) << "Lattice=\"" << t->cellx*scaleby << " 0.0 0.0 0.0 " << t->celly*scaleby << " 0.0 0.0 0.0 " << t->cellz*scaleby << "\"" << endl;
     }
     else if (mPrintFormat == StructureFormat::runnerwithforceweights || mPrintFormat == StructureFormat::runner) {
         (*mpOut) << "begin" << endl;

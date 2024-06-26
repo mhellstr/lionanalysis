@@ -4,7 +4,7 @@
 #include "action.h"
 #include "groupcoordination.h"
 
-enum class StructureFormat { mattixyz, xmolout, ymol, lammpsrdx, mattixyzdelta, runnerwithforceweights, runner };
+enum class StructureFormat { mattixyz, xmolout, ymol, lammpsrdx, mattixyzdelta, runnerwithforceweights, runner, asexyz };
 
 class ActionPrintStructure : public Action {
 public:
