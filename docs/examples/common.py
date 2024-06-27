@@ -54,6 +54,11 @@ def msd2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
     return df
 
 
+def tcf2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
+    df = pd.read_csv(filename, sep="\s+", skiprows=2)
+    return df
+
+
 def wip_seaborn_rdf_multiplot(rdf_files: Sequence[os.PathLike]):
     df = pd.concat(rdf2df(filename).assign(source=filename) for filename in rdf_files)
     sns.relplot(df, x="#r", y="RDF", hue="source", kind="line", height=3)
