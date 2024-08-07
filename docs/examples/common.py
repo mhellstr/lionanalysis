@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from typing import Sequence, Union
 from pathlib import Path
+from scipy.optimize import curve_fit
 
 
 def hist2df(filename: Union[os.PathLike, str]) -> pd.DataFrame:
@@ -105,4 +106,36 @@ def plot_trajectory(
         ase.visualize.plot.plot_atoms(trajectory[frame], ax=ax[i], rotation=rotation, radii=radii)
         ax[i].set_title(f"{basename} #{frame+1}")
         ax[i].axis("off")
+    return ax
+
+
+def double_exp(x, A: float, tau1: float, tau2: float):
+    return A * np.exp(-x / tau1) + (1 - A) * np.exp(-x / tau2)
+
+
+def fit_and_plot_double_exp(
+    df: pd.DataFrame, A: float = 0.1, tau1: float = 0.5, tau2: float = 2.5, title: str = ""
+) -> plt.Axes:
+    p0 = A, tau1, tau2
+    x = df["#t(ps)"].to_numpy()
+    y = df["value"].to_numpy()
+
+    fig, ax = plt.subplots()
+    try:
+        popt, _ = curve_fit(double_exp, x, y, p0=p0)
+        A, tau1, tau2 = popt
+        prediction = double_exp(x, A, tau1, tau2)
+
+        lifetime = A * tau1 + (1 - A) * tau2
+        print(f"{A=:.2f} {tau1=:.2f} {tau2=:.2f} {lifetime=:.2f}")
+
+        ax.plot(x, y, "-")
+        ax.plot(x, prediction)
+        ax.set_title(f"LIFETIME {title} = {lifetime:.2f} ps")
+        ax.set_xlabel("Correlation time (ps)")
+        ax.legend(["Correlation function", "Double-exponential fit"])
+    except RuntimeError:
+        ax.plot(x, y, "-")
+        ax.set_title("Couldn't fit double exponential to this function.")
+
     return ax
