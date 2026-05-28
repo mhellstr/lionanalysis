@@ -26,6 +26,14 @@ Check the ``docs/examples/`` folder for some self-contained pedagogical examples
 
 Documentation at [lionanalysis.readthedocs.io](https://lionanalysis.readthedocs.io)
 
+## Citing lionanalysis
+
+Cite lionanalysis in published work as
+
+> M. Hellström, *lionanalysis* v0.5, https://github.com/mhellstr/lionanalysis/
+
+Optionally, cite one of the papers below that uses a feature that you used.
+
 ## Papers using lionanalysis
 
 - [Concentration-Dependent Proton Transfer Mechanisms in Aqueous NaOH Solutions: From Acceptor-Driven to Donor-Driven and Back](https://doi.org/10.1021/acs.jpclett.6b01448)

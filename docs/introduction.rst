@@ -95,7 +95,7 @@ Check your installation:
 
 .. code-block::
 
-    lionanlaysis.exe --help
+    lionanalysis.exe --help
 
 To run an input file:
 
